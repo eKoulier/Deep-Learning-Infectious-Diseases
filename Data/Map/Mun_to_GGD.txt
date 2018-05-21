@@ -1,0 +1,106 @@
+Municipality	GGD
+Asten	BZO
+Bergeijk	BZO
+Best	BZO
+Bladel	BZO
+Son en Breugel	BZO
+Cranendonck	BZO
+Deurne	BZO
+Eersel	BZO
+Eindhoven	BZO
+Geldrop-Mierlo	BZO
+Gemert-Bakel	BZO
+Heeze-Leende	BZO
+Helmond	BZO
+Nuenen	BZO
+Laarbeek	BZO
+Oirschot	BZO
+Reusel-De Mierden	BZO
+Someren	BZO
+Son en Breugel	BZO
+Valkenswaard	BZO
+Veldhoven	BZO
+Waalre	BZO
+Bernheze	HVB
+Boekel	HVB
+Boxmeer	HVB
+Boxtel	HVB
+Cuijk	HVB
+Maasdonk	HVB
+Dongen	HVB
+Gilze en Rijen	HVB
+Goirle	HVB
+Grave	HVB
+Haaren	HVB
+Heusden	HVB
+Hilvarenbeek	HVB
+Landerd	HVB
+Loon op Zand	HVB
+Maasdonk	HVB
+Mill en Sint Hubert	HVB
+Oisterwijk	HVB
+Oss	HVB
+Schijndel	HVB
+'s-Hertogenbosch	HVB
+Sint Anthonis	HVB
+Maasdriel	HVB
+Sint-Michielsgestel	HVB
+Sint-Oedenrode	HVB
+Tilburg	HVB
+Uden	HVB
+Veghel	HVB
+Vught	HVB
+Waalwijk	HVB
+Meierijstad	HVB
+Aalburg	WB
+Baarle-Nassau	WB
+Bergen op Zoom	WB
+Breda	WB
+Etten-Leur	WB
+Geertruidenberg	WB
+Oosterhout	WB
+Rucphen	WB
+Steenbergen	WB
+Werkendam	WB
+Woensdrecht	WB
+Woudrichem	WB
+Gilzeen Rijen	WB
+Zundert	WB
+Halderberge	WB
+Roosendaal	WB
+Moerdijk	WB
+Drimmelen	WB
+Alphen-Chaam	WB
+Beesel	LIM
+Bergen	LIM
+Echt-Susteren	LIM
+Gennep	LIM
+Horst aan de Maas	LIM
+Leudal 	LIM
+Maasgouw	LIM
+Mook en Middelaar 	LIM
+Nederweert	LIM
+Peel en Maas	LIM
+Roerdale 	LIM
+Roermond	LIM
+Venlo	LIM
+Venray 	LIM
+Weert	LIM
+Beek	LIM
+Brunssum	LIM
+Eijsden-Margraten	LIM
+Gulpen-Wittem	LIM
+Heerlen	LIM
+Kerkrade	LIM
+Landgraaf	LIM
+Maastricht	LIM
+Meerssen	LIM
+Nuth	LIM
+Onderbanken	LIM
+Schinnen	LIM
+Simpelveld	LIM
+Sittard-Geleen	LIM
+Stein	LIM
+Vaals	LIM
+Valkenburg a/d Geul	LIM
+Voerendaal	LIM
