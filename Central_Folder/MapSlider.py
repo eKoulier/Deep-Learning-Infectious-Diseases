@@ -21,7 +21,7 @@ column_list = [e for e in column_list if e not in
 
 
 # Here Starts the Bokeh App
-def bokeh_map():
+def bokeh_map(disease):
 
     def slider_title(n):
         return 'Number of Incidences in ' + column_list[n]
@@ -39,9 +39,13 @@ def bokeh_map():
 
     geojson = shp_data.to_json()
 
+    if disease == 'Kinkhoest':
+        high = shp_data['2012-04'].max()
+    else:
+        high = shp_data[column_list].max().max() - 3
+
     mapper = LinearColorMapper(palette=Magma256[::-1],
-                               low=shp_data['2012-04'].min(),
-                               high=shp_data['2012-04'].max())
+                               low=0, high=high)
 
     geo_source = GeoJSONDataSource(geojson=geojson)
     p = figure(tools=TOOLS, toolbar_sticky=False,
@@ -86,8 +90,8 @@ def bokeh_map():
     curdoc().add_root(layout)
 
 
-bokeh_map()
+bokeh_map(disease='Mumps')
 
-# cd "Desktop\Infectious Diseases\Central_Folder"
+# cd "Desktop\Deep-Learning-Infectious-Diseases\Central_Folder"
 # bokeh serve --show MapSlider.py
 # bokeh serve --show playslider_weighted.py

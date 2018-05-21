@@ -8,7 +8,7 @@ sys.path.append("../Data/Map")
 
 # First we read the Files to be use
 cwd = os.getcwd()
-os.chdir(r'C:/Users/ekoulier/Desktop/Infectious Diseases/Data/Map')
+os.chdir(r'../Data/Map')
 post_to_mun = pd.read_csv('Post_to_Mun.txt', sep=';')
 mun_to_GGD = pd.read_csv('Mun_to_GGD.csv', sep=';')
 mun_to_GGD['Municipality'] = mun_to_GGD['Municipality'].replace('Nuenen', 'Nuenen, ' +
@@ -42,7 +42,16 @@ class monthly_transfrom(object):
         # Create the Count column for the pivot table
         df_data['Count'] = 1
 
-        self.df = df_data
+        time_df = pd.DataFrame()
+        time_df['Date'] = pd.period_range(start=df_data['Date'].min() - 2,
+                                          end=df_data['Date'].max(), freq='M')
+
+        # Probably there are missing months in the data and this is why we do the following
+        df_time_extended = time_df.merge(df_data, on=['Date'], how='outer')
+        df_time_extended['Count'] = df_time_extended['Count'].fillna(0)
+        df_time_extended['PostCode'] = df_time_extended['PostCode'].fillna(5731)
+
+        self.df = df_time_extended
 
     def find_mun(self):
         """ Creates the Municipality column to the DataFrame. The Dataframe
