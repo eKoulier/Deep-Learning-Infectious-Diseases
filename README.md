@@ -4,7 +4,7 @@ There are mainly four different subdirectories for this project:
 
 * [Central_Folder](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Central_Folder) is the main file where the preprocessing of the data as well as the modeling part is automated. A tutorial on how to make an interactive choropleth that has a time slider is provided in [MapSlider.py](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/blob/master/Central_Folder/MapSlider.py).
 
-* [Data](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Central_Folder) is where the data of this project is stored. We mainly focused on the disease named *Kinkhoest* which is the dutch word for whoping cough.
+* [Data](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Central_Folder) is where the data of this project is stored. We mainly focused on the disease named *Kinkhoest* which is the dutch word for Whooping Cough which is the regular name for Bordetella Pertussis.
 
 * [Analysis](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Analysis) is where the python notebooks are stored.
 
