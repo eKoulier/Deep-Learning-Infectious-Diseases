@@ -8,4 +8,4 @@ There are mainly four different subdirectories for this project:
 
 * [Analysis](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Analysis) is where the python notebooks are stored.
 
-* [Application](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Application) is the where the code to develop the dashboard that incorporates both the modeling and the visualization elements of this project.
+* [Application](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Application) is the folder that has the code to develop the dashboard that incorporates both the modeling and the visualization elements of this project.
