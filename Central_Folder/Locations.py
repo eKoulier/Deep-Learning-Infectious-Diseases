@@ -17,7 +17,7 @@ shp_Nether = gpd.read_file('GEO.Gemeente_2015.shp')
 os.chdir(cwd)
 
 
-class monthly_transfrom(object):
+class MonthlyTransfrom(object):
     """ A class to create the aggregated dataframe. Two methods provided:
     The aggregation by GGD and the aggregation by muicipality.
     """
@@ -96,7 +96,7 @@ class monthly_transfrom(object):
         2004-3    2      0       1
         Parameters
         -------------------------
-        df: Pandas DataFrame
+        self.df: Pandas DataFrame
             It must have at least two columns named Municipality and Date.
             It is the general appended dateframe that has the following format:
             index Municipality Date       Sex
@@ -159,9 +159,9 @@ class monthly_transfrom(object):
     def monthly_GGD(self, GGD_index=True, gTrends=True, Brabant=True):
         """
         A function that creates the pivot pd.DataFrame:
-        Month    HVB  WB  BZO
-        2004-2    1    3   0
-        2004-3    2    0   1
+        Month    HVB  WB  BZO  Trends
+        2004-2    1    3   0     8
+        2004-3    2    0   1     2
         Parameters
         -------------------------
         df: Pandas DataFrame
