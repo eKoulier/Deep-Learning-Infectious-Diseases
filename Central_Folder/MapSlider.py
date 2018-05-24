@@ -7,21 +7,11 @@ from bokeh.models.widgets import Slider
 from bokeh.layouts import layout, column
 from bokeh.plotting import figure
 
-# General Imports
+# General Imports to preprocess the data
 from Locations import MonthlyTransfrom, make_df_shapefile, disease_studied
 
-ALL_df = disease_studied()
-data = MonthlyTransfrom(ALL_df)
-data.find_mun()
-data = data.monthly_municipality()
-shp_data = make_df_shapefile(data)
-column_list = shp_data.columns.tolist()
-column_list = [e for e in column_list if e not in
-               ('Municipality', 'geometry')]
-
-
 # Here Starts the Bokeh App
-def bokeh_map(disease):
+def bokeh_map():
     """This function creates the choropleth map with the time slider using Bokeh library.
     The input to this function is the geopandas DataFrame that has the 'Geometry column':
     index  Municipality  2004-01  2004-02  2004-3  ... Geometry
@@ -29,6 +19,32 @@ def bokeh_map(disease):
       1       Breda         8       14      9          POLYGON()
     Obviously, the time slider will read from the columns 2004-01, 2004-02, etc.
     """
+
+    disease = str(input('What disease would you like to Visualize? '))
+
+    # The following condition is to make the map better since the max values
+    # only correspond to just a few municipalities.
+
+    # Data Preprocessing
+    ALL_df = disease_studied()
+    data = MonthlyTransfrom(ALL_df)
+    data.find_mun()
+    data = data.monthly_municipality()
+    shp_data = make_df_shapefile(data)
+    column_list = shp_data.columns.tolist()
+    column_list = [e for e in column_list if e not in
+                   ('Municipality', 'geometry')]
+
+    # Map Building
+    if disease == 'Kinkhoest':
+        high = shp_data['2012-04'].max()
+    else:
+        high = shp_data[column_list].max().max() - 3
+
+    TOOLS = "pan,wheel_zoom,reset,hover,save"
+    color_column = '2010-01'
+
+    geojson = shp_data.to_json()
 
     def slider_title(n):
         return 'Number of Incidences in ' + column_list[n]
@@ -41,16 +57,6 @@ def bokeh_map(disease):
     # Initial Column of the Time Slider
     N = 0
 
-    TOOLS = "pan,wheel_zoom,reset,hover,save"
-    color_column = '2010-01'
-
-    geojson = shp_data.to_json()
-
-    if disease == 'Kinkhoest':
-        high = shp_data['2012-04'].max()
-    else:
-        high = shp_data[column_list].max().max() - 3
-
     mapper = LinearColorMapper(palette=Magma256[::-1],
                                low=0, high=high)
 
@@ -62,6 +68,10 @@ def bokeh_map(disease):
                                              'transform': mapper},
                                  line_color='black', line_width=0.2,
                                  source=geo_source)
+
+    # This is to remove the grid lines of the map to make it look better.
+    p.xgrid.visible = False
+    p.ygrid.visible = False
 
     hover = p.select_one(HoverTool)
     hover.point_policy = "follow_mouse"
@@ -97,7 +107,7 @@ def bokeh_map(disease):
     curdoc().add_root(layout)
 
 
-bokeh_map(disease='Mumps')
+bokeh_map()
 
 # cd "Desktop\Deep-Learning-Infectious-Diseases\Central_Folder"
 # bokeh serve --show MapSlider.py

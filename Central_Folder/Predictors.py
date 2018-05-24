@@ -18,7 +18,6 @@ post_to_mun = pd.read_csv('Post_to_Mun.txt', sep=';')
 mun_to_GGD = pd.read_csv('Mun_to_GGD.csv', sep=';')
 mun_to_GGD['Municipality'] = mun_to_GGD['Municipality'].replace('Nuenen', 'Nuenen, ' +
                                                                 'Gerwen en Nederwetten')
-shp_Nether = gpd.read_file('GEO.Gemeente_2015.shp')
 os.chdir(cwd)
 
 
@@ -46,7 +45,7 @@ class PrepareTimeDf(object):
         if 'Date' in self.df.columns:
             del self.df['Date']
 
-        if Brabant:
+        if brabant:
             df = self.df[['HVB', 'BZO', 'WB', 'Trends']]
         else:
             df = self.df
@@ -108,7 +107,6 @@ class ModelUse(object):
         self.predWB = pd.DataFrame()
         self.predBZO = pd.DataFrame()
 
-
     def train_model(self, epochs, times, nbest, Perf):
         ''' The train method.
         times: int
@@ -140,10 +138,6 @@ class ModelUse(object):
             self.predHVB[time] = y_predict[:, 0]
             self.predWB[time] = y_predict[:, 1]
             self
-
-
-
-
 
 
 class DeepNN(object):
