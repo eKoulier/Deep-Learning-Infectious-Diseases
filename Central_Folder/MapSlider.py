@@ -10,13 +10,18 @@ from bokeh.plotting import figure
 # General Imports to preprocess the data
 from Locations import MonthlyTransfrom, make_df_shapefile, disease_studied
 
+
 # Here Starts the Bokeh App
 def bokeh_map():
     """This function creates the choropleth map with the time slider using Bokeh library.
-    The input to this function is the geopandas DataFrame that has the 'Geometry column':
-    index  Municipality  2004-01  2004-02  2004-3  ... Geometry
-      0     Eindhoven       2       5       12         POLYGON()
-      1       Breda         8       14      9          POLYGON()
+    The input to the main body of this function before, is the geopandas DataFrame that has the
+    'Geometry column' (see below). This map is made especially for disease incidence visualizations
+    and for other visualization purposes (electios, sell-buy, etc), the user should change the high
+    parameter and to make the shp_data variable similar to the following:
+    index   Municipality  2004-01   2004-02   2004-3  ...  Geometry
+      0      Eindhoven       2         5        12         POLYGON()
+      1        Breda         8        14         9         POLYGON()
+      2 's Hertogenbosch     0         0        19         POLYGON()
     Obviously, the time slider will read from the columns 2004-01, 2004-02, etc.
     """
 
@@ -32,10 +37,9 @@ def bokeh_map():
     data = data.monthly_municipality()
     shp_data = make_df_shapefile(data)
     column_list = shp_data.columns.tolist()
-    column_list = [e for e in column_list if e not in
-                   ('Municipality', 'geometry')]
+    column_list = [e for e in column_list if e not in ('Municipality', 'geometry')]
 
-    # Map Building
+    # Main Body
     if disease == 'Kinkhoest':
         high = shp_data['2012-04'].max()
     else:
@@ -57,12 +61,10 @@ def bokeh_map():
     # Initial Column of the Time Slider
     N = 0
 
-    mapper = LinearColorMapper(palette=Magma256[::-1],
-                               low=0, high=high)
+    mapper = LinearColorMapper(palette=Magma256[::-1], low=0, high=high)
 
     geo_source = GeoJSONDataSource(geojson=geojson)
-    p = figure(tools=TOOLS, toolbar_sticky=False,
-               plot_width=600, plot_height=285)
+    p = figure(tools=TOOLS, toolbar_sticky=False, plot_width=600, plot_height=285)
     patches_renderer = p.patches('xs', 'ys', fill_alpha=0.7,
                                  fill_color={'field': color_column,
                                              'transform': mapper},
@@ -84,9 +86,8 @@ def bokeh_map():
                          border_line_color=None, location=(0, 0))
     p.add_layout(color_bar, 'right')
 
-    slider = Slider(start=0, end=len(column_list)-1, value=N, step=1,
-                    width=515, show_value=False, tooltips=False,
-                    title='Number of Incidences in ' + column_list[N])
+    slider = Slider(start=0, end=len(column_list)-1, value=N, step=1, width=515, show_value=False,
+                    tooltips=False, title='Number of Incidences in ' + column_list[N])
 
     def callback(attr, old, new):
         N = slider.value

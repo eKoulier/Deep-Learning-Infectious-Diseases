@@ -1,6 +1,7 @@
 import pandas as pd
 import geopandas as gpd
 import numpy as np
+from sklearn.model_selection import train_test_split
 import os
 
 import sys
@@ -65,7 +66,8 @@ class MonthlyTransfrom(object):
                 del self.df['Municipality']
 
             self.df = pd.merge(self.df, post_to_mun, on='PostCode')
-            self.df['Municipality'] = self.df['Municipality'].replace('Nuenen', 'Nuenen, Gerwen en Nederwetten')
+            self.df['Municipality'] = self.df['Municipality'].replace('Nuenen',
+                                                                      'Nuenen, Gerwen en Nederwetten')
 
         except AssertionError:
             print('LEFTERIS\'S MESSEGE!: ' +
@@ -281,13 +283,15 @@ def make_df_shapefile(df):
             print('There is no Column Named Municipality')
 
 
-def disease_studied():
+def disease_studied(keep=False):
     """ Directs to the relevant data directory of the disease. It then concatenates
     all the dataframes of that disease.
+    keep: Bool
+        If True we keep all the columns of the dataframe to be returned.
     """
     fndir = os.getcwd()
 
-    directory = str(input('Please Copy and Paste the Data Directory'))
+    directory = str(input('Please Copy and Paste the Data Directory: '))
     print('I will concatenate all the csv files for you.')
 
     def find_csv_filenames(path_to_dir, suffix=".csv"):
@@ -312,10 +316,83 @@ def disease_studied():
 
         all_df = all_df.append(df).reset_index(drop=True)
 
-    for column in all_df.columns.tolist():
-        if column not in ['PostCode', 'Date']:
-            del all_df[column]
+    if not keep:
+        for column in all_df.columns.tolist():
+            if column not in ['PostCode', 'Date']:
+                del all_df[column]
 
     os.chdir(fndir)
 
     return all_df
+
+
+class PrepareTimeDf(object):
+    """ The class that prepares the data to be used by the predictors.
+    """
+    def __init__(self, df):
+        """ Initialize the object.
+        """
+        assert type(df) == pd.core.frame.DataFrame,\
+            'What you have provided is not a Pandas DataFrame'
+
+        self.df = df
+
+    def create_lag(self, brabant=True, nlags=4):
+        """ Preprocesses the dataset in order to create time lags for 'HVB', 'WB', 'BZO' and 'Trends'.
+        df: Pandas DataFrame
+        brabat: Bool
+            If True, then only the columns named 'BZO', 'WB', 'HVB' will be kept
+        lag: int
+            This is the time lag to be created for each column
+        """
+        assert type(nlags) == int
+
+        if 'Date' in self.df.columns:
+            del self.df['Date']
+
+        if brabant:
+            df = self.df[['HVB', 'BZO', 'WB', 'Trends']]
+        else:
+            df = self.df
+
+        for column in df.columns.tolist():
+            for lag in range(1, nlags+1):
+                df[column+'-'+str(lag)] = df[column].shift(lag)
+            df[column+'+1'] = df[column].shift(-1)
+
+        # We don't need Trends +1, no reason to forecast it. Remove also the last lag of trends
+        del df['Trends+1']
+        del df['Trends-'+str(nlags)]
+
+        # Due to the shift that creates nans, we delete the first nlags rows and the last row.
+        df = df[nlags:].reset_index(drop=True)
+        df = df[:-1]
+
+        self.df = df
+
+    def split_data(self, train=0.33, val=0.1):
+        """Splits the data to create a train, a validation, and a test set.
+        train: float
+            Percentage of the train set.
+        val: float
+            Percentage of the validation set.
+        """
+        assert train < 1 and train > 0,\
+            "Train set must be between 0 and 1"
+        assert val < 1 and val > 0,\
+            "Validation set must be between 0 and 1"
+
+        # Create a list of the target columns
+        target_cols = [col for col in self.df.columns if '+1' in col]
+        # Isolate the target columns
+        y = self.df[target_cols]
+        # Isolate the feature columns
+        features = [col for col in self.df.columns if col not in target_cols]
+        X = self.df[features]
+
+        # Split the data
+        X_T, X_test, y_T, y_test = train_test_split(X, y, test_size=train, shuffle=False)
+        # Make the validation dataset
+        X_train, X_val, y_train, y_val = train_test_split(X_T, y_T, test_size=val, shuffle=True)
+
+        return X_train, X_test, X_val, y_train, y_test, y_val
