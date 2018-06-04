@@ -53,11 +53,6 @@ def bokeh_map():
     def slider_title(n):
         return 'Number of Incidences in ' + column_list[n]
 
-    def tooltip(n):
-        return [
-            ("Municipality", "@Municipality"),
-            ("Incidences", "@{" + column_list[N] + "}"),
-        ]
     # Initial Column of the Time Slider
     N = 0
 
@@ -68,8 +63,7 @@ def bokeh_map():
     patches_renderer = p.patches('xs', 'ys', fill_alpha=0.7,
                                  fill_color={'field': color_column,
                                              'transform': mapper},
-                                 line_color='black', line_width=0.2,
-                                 source=geo_source)
+                                 line_color='black', line_width=0.2, source=geo_source)
 
     # This is to remove the grid lines of the map to make it look better.
     p.xgrid.visible = False
@@ -86,7 +80,8 @@ def bokeh_map():
                          border_line_color=None, location=(0, 0))
     p.add_layout(color_bar, 'right')
 
-    slider = Slider(start=0, end=len(column_list)-1, value=N, step=1, width=515, show_value=False,
+    # The end of the slider should be this otherwise there is a bag behavior
+    slider = Slider(start=0, end=len(column_list)+2, value=N, step=1, width=515, show_value=False,
                     tooltips=False, title='Number of Incidences in ' + column_list[N])
 
     def callback(attr, old, new):
