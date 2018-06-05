@@ -8,14 +8,14 @@ import sys
 sys.path.append("../Data/Map")
 
 # First we read the Files to be use
-cwd = os.getcwd()
+cwd_L = os.getcwd()
 os.chdir(r'../Data/Map')
 post_to_mun = pd.read_csv('Post_to_Mun.txt', sep=';')
 mun_to_GGD = pd.read_csv('Mun_to_GGD.csv', sep=';')
 mun_to_GGD['Municipality'] = mun_to_GGD['Municipality'].replace('Nuenen', 'Nuenen, ' +
                                                                 'Gerwen en Nederwetten')
 shp_Nether = gpd.read_file('GEO.Gemeente_2015.shp')
-os.chdir(cwd)
+os.chdir(cwd_L)
 
 
 class MonthlyTransfrom(object):
@@ -44,7 +44,7 @@ class MonthlyTransfrom(object):
         df_data['Count'] = 1
 
         time_df = pd.DataFrame()
-        time_df['Date'] = pd.period_range(start=df_data['Date'].min() - 2,
+        time_df['Date'] = pd.period_range(start=df_data['Date'].min() - 1,
                                           end=df_data['Date'].max(), freq='M')
 
         # Probably there are missing months in the data and this is why we do the following
@@ -113,9 +113,11 @@ class MonthlyTransfrom(object):
             If True, we limit ourselves to the Noord-Brabant Municipalities.
             Good to have it to build the interactive map.
         """
-        msg = 'LEFTERIS\'S MESSEGE!: There sould be a Date and a Municipality column'
-        assert('Municipality' in self.df.columns, msg)
-        assert('Date' in self.df.columns, msg)
+        # msg = 'LEFTERIS\'S MESSEGE!: There sould be a Date and a Municipality column'
+        assert 'Municipality' in self.df.columns,\
+               'LEFTERIS\'S MESSEGE!: There sould be a Municipality column'
+        assert 'Date' in self.df.columns,\
+               'LEFTERIS\'S MESSEGE!: There sould be a Date column'
 
         data = self.df.copy()
 
@@ -220,6 +222,10 @@ class MonthlyTransfrom(object):
 
                 GGD_df = pd.merge(GGD_df, gTrendsData, on='Date')
 
+                # We convert the Date column to pandas periods so that we can plot the number of incidences
+                GGD_df['Date'] = GGD_df['Date'].astype(str)
+                GGD_df['Date'] = pd.to_datetime(GGD_df['Date'], format='%Y-%m')
+
             return GGD_df
 
         except AssertionError:
@@ -311,8 +317,8 @@ def disease_studied(keep=False):
             if column not in df.columns.tolist():
                 df = pd.read_csv(csv, sep=';')
                 for column in ['PostCode', 'Date']:
-                    if column not in ['PostCode', 'Date']:
-                        print('LEFTERIS MESSAGE: CAREFUL! there is no column named ' + column + 'in ' + csv)
+                    if column not in df.columns.tolist():
+                        print('LEFTERIS: CAREFUL! there is no column named ' + column + 'in ' + csv)
 
         all_df = all_df.append(df).reset_index(drop=True)
 
@@ -323,6 +329,7 @@ def disease_studied(keep=False):
 
     os.chdir(fndir)
 
+    print('The data is merged correctly!')
     return all_df
 
 
@@ -384,8 +391,10 @@ class PrepareTimeDf(object):
 
         # Create a list of the target columns
         target_cols = [col for col in self.df.columns if '+1' in col]
+
         # Isolate the target columns
         y = self.df[target_cols]
+
         # Isolate the feature columns
         features = [col for col in self.df.columns if col not in target_cols]
         X = self.df[features]
