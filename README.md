@@ -20,3 +20,6 @@ is where the python notebooks are stored.
 
 * [Application](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Application) 
 Is the folder that has the code to develop the application that incorporates both the modeling and the visualization elements of this project.
+
+* [Images](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Images)
+This file just contains the logo of this project.
