@@ -1,3 +1,5 @@
+<img src="images/jads_logo.png" width="425"/> <img src="images/kaggle_logo.png" width="425"/>
+
 # Deep-Learning-Infectious-Diseases
 This is the repository for the Infectious Disease Project sponsored by [GGD Netherlands](https://nl.wikipedia.org/wiki/Gemeentelijke_gezondheidsdienst). 
 For this project, three GGD departments were involved: GGD West-Brabant, GGD Hart voor Brabant, and GGD Brabant Zuidoost. 
