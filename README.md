@@ -2,7 +2,7 @@
 This is the repository for the Infectious Disease Project sponsored by [GGD Netherlands](https://nl.wikipedia.org/wiki/Gemeentelijke_gezondheidsdienst). 
 For this project, three GGD departments were involved: GGD West-Brabant, GGD Hart voor Brabant, and GGD Brabant Zuidoost. 
 This project is done in collaboration with [JADS](https://www.jads.nl). For this repository the [PEP8](https://www.python.org/dev/peps/pep-0008/) is used to assert code readability.
-The architecture of this repository is simple to facilitate further extentions and it is discribed below. 
+The architecture of this repository is simple to facilitate further extentions and it is described below. 
 There are mainly four different subdirectories for this project: 
 
 * [Central_Folder](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Central_Folder) 
@@ -11,7 +11,7 @@ is provided in [MapSlider.py](https://github.com/eKoulier/Deep-Learning-Infectio
 
 * [Data](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Central_Folder) 
 is where the data of this project is stored. We mainly focused on the disease named *Kinkhoest* which is the dutch word for Whooping Cough (medical name: Bordetella Pertussis).
-Another disease studied is Mumps.
+Another disease studied is Mumps. The data is not uploaded here and this file is here to reproduce the structure of the local repositories.
 
 * [Analysis](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Analysis) 
 is where the python notebooks are stored.
