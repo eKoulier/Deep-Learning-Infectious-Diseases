@@ -1,4 +1,4 @@
-<img src="images/jads_logo.png" width="425"/> <img src="images/kaggle_logo.png" width="425"/>
+<img src="Images/jads_logo.png" width="425"/> <img src="Images/ggd_logo.png" width="425"/>
 
 # Deep-Learning-Infectious-Diseases
 This is the repository for the Infectious Disease Project sponsored by [GGD Netherlands](https://nl.wikipedia.org/wiki/Gemeentelijke_gezondheidsdienst). 
