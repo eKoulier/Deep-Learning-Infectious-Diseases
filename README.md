@@ -1,4 +1,4 @@
-<img src="Images/jads_logo.png" width="425"/> <img src="Images/ggd_logo.png" width="425"/>
+<img src="Images/project_logo.png" width="800"/> 
 
 # Deep-Learning-Infectious-Diseases
 Wellcome to the repository of the Infectious Disease Project sponsored by [GGD Netherlands](https://nl.wikipedia.org/wiki/Gemeentelijke_gezondheidsdienst). 
@@ -21,3 +21,6 @@ is where the python notebooks are stored.
 
 * [Application](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Application) 
 Is the folder that has the code to develop the application that incorporates both the modeling and the visualization elements of this project.
+
+* [Images](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Images)
+This file just contains the logo of this project.
