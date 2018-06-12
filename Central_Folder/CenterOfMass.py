@@ -34,6 +34,8 @@ def bokeh_map():
     ALL_df = disease_studied()
     data = MonthlyTransform(ALL_df)
     data.find_mun()
+    longi, lati = data.center_of_mass()
+    data.find_mun()
     data = data.monthly_municipality()
     shp_data = make_df_shapefile(data)
     column_list = shp_data.columns.tolist()
@@ -65,6 +67,8 @@ def bokeh_map():
                                              'transform': mapper},
                                  line_color='black', line_width=0.2, source=geo_source)
 
+    centerofmass = p.circle(x=longi[N], y=lati[N], color="#1a5921",)
+
     # This is to remove the grid lines of the map to make it look better.
     p.xgrid.visible = False
     p.ygrid.visible = False
@@ -90,6 +94,9 @@ def bokeh_map():
         slider.title = slider_title(new)
         g = patches_renderer.glyph
         g.fill_color = {**g.fill_color, 'field': color_column}
+        k = centerofmass.glyph
+        k.x = longi[new]
+        k.y = lati[new]
         hover = p.select_one(HoverTool)
         hover.point_policy = "follow_mouse"
         hover.tooltips = [
@@ -106,4 +113,4 @@ def bokeh_map():
 bokeh_map()
 
 # cd "Desktop\Deep-Learning-Infectious-Diseases\Central_Folder"
-# bokeh serve --show MapSlider.py
+# bokeh serve --show CenterOfMass.py

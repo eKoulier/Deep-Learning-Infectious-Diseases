@@ -3,6 +3,7 @@ import geopandas as gpd
 import numpy as np
 from sklearn.model_selection import train_test_split
 import os
+import copy as cp
 
 import sys
 sys.path.append("../Data/Map")
@@ -12,21 +13,29 @@ cwd_L = os.getcwd()
 os.chdir(r'../Data/Map')
 post_to_mun = pd.read_csv('Post_to_Mun.txt', sep=';')
 mun_to_GGD = pd.read_csv('Mun_to_GGD.csv', sep=';')
-mun_to_GGD['Municipality'] = mun_to_GGD['Municipality'].replace('Nuenen', 'Nuenen, ' +
-                                                                'Gerwen en Nederwetten')
+mun_to_GGD['Municipality'] = mun_to_GGD['Municipality'].replace('Nuenen',
+                                                                'Nuenen, Gerwen en Nederwetten')
 shp_Nether = gpd.read_file('GEO.Gemeente_2015.shp')
 os.chdir(cwd_L)
 
 
-class MonthlyTransfrom(object):
+class MonthlyTransform(object):
     """ A class to create the aggregated dataframe. Two methods provided:
-    The aggregation by GGD and the aggregation by muicipality.
+    The aggregation by GGD and the aggregation by municipality.
     """
 
     def __init__(self, df):
         """ Initialize the dataframe object. The dataframe has the following
         format:
         Date  PostCode  Sex  Year of Birth etc
+        Parameters
+        -------------------------
+        df: Pandas DataFrame
+            It must have at least two columns named Municipality and Date.
+            It is the general appended dateframe that has the following format:
+            index Municipality  Date           Sex
+            0      Oss          2005-8-15      Man
+            1      Eindhoven    2016-2-22      Vraouw
         """
         self.df = df
         df_data = self.df.copy()
@@ -44,7 +53,7 @@ class MonthlyTransfrom(object):
         df_data['Count'] = 1
 
         time_df = pd.DataFrame()
-        time_df['Date'] = pd.period_range(start=df_data['Date'].min() - 1,
+        time_df['Date'] = pd.period_range(start=df_data['Date'].min(),
                                           end=df_data['Date'].max(), freq='M')
 
         # Probably there are missing months in the data and this is why we do the following
@@ -125,22 +134,14 @@ class MonthlyTransfrom(object):
         data = data[['Date', 'Municipality', 'Count']]
 
         # Create the pivot table
-        if mun_index:
-            Mun_df = data.pivot_table(index='Municipality',
-                                      columns='Date', values='Count',
-                                      aggfunc=np.sum, fill_value=0)
 
-            # Delete the extra heading of the pivot table
-            Mun_df = pd.DataFrame(Mun_df.to_records())
+        Mun_df = data.pivot_table(index='Municipality',
+                                  columns='Date', values='Count',
+                                  aggfunc=np.sum, fill_value=0)
 
-        else:
-            Mun_df = data.pivot_table(index='Date',
-                                      columns='Municipality',
-                                      values='Count',
-                                      aggfunc=np.sum, fill_value=0)
+        # Delete the extra heading of the pivot table
+        Mun_df = pd.DataFrame(Mun_df.to_records())
 
-            # Delete the extra heading of the pivot table
-            Mun_df = pd.DataFrame(Mun_df.to_records())
 
         if Brabant:
             br_mun_list = mun_to_GGD['Municipality'][mun_to_GGD['GGD'].isin(['BZO', 'HVB', 'WB'])]
@@ -157,6 +158,18 @@ class MonthlyTransfrom(object):
                     temp_series = pd.Series(temp_dict)
 
                     Mun_df = Mun_df.append(temp_series, ignore_index=True)
+
+        if not mun_index:
+            Mun_df = Mun_df.transpose()
+            Mun_df.columns = Mun_df.iloc[0, :].tolist()
+            Mun_df = Mun_df.iloc[2:, :]
+            Mun_df['Date'] = Mun_df.index
+
+            # Need to modify the date to plot the municipal time series
+            Mun_df['Date'] = Mun_df['Date'].astype(str)
+            Mun_df['Date'] = pd.to_datetime(Mun_df['Date'], format='%Y-%m')
+
+            Mun_df = Mun_df.reset_index(drop=True)
 
         return Mun_df
 
@@ -230,6 +243,88 @@ class MonthlyTransfrom(object):
 
         except AssertionError:
             print('There sould be a Date and a GGD column')
+
+    def center_of_mass(self):
+        """
+        A function that returns the longitude and latitude series that have the format:
+            2004-01  2004-02  2004-03
+            5.37758  5.13163  5.37601
+            2004-01  2004-02  2004-03
+            51.5588  51.5767  51.5961
+        """
+
+        thisdir = os.getcwd()
+        os.chdir(r'../Data/Map')
+        coord = pd.read_csv('nl_postal_codes.csv', encoding="ISO-8859-1")
+        os.chdir(thisdir)
+
+        coord = coord[['County', 'Latitude', 'Longitude']]
+        coord.columns = ['Municipality', 'Latitude', 'Longitude']
+
+        # erase gemeente word in front of every municipality
+        coord['Municipality'] = coord['Municipality'].str[9:]
+        coord['Municipality'] = coord['Municipality'].replace('Nuenen', 'Nuenen, Gerwen en Nederwetten')
+
+        municipalities = mun_to_GGD['Municipality'][mun_to_GGD['GGD'].isin(['BZO', 'HVB', 'WB'])]
+        municipalities = municipalities.tolist()
+
+        coord = coord[coord['Municipality'].isin(municipalities)].reset_index(drop=True)
+
+        # Avoid coordinate reduntancy
+        coord = coord.groupby('Municipality').head(1).reset_index(drop=True)
+
+        # import the data
+        aggregated_data = cp.copy(self)
+        aggregated_data.find_mun()
+        aggregated_data = aggregated_data.monthly_municipality()
+
+        # find the number of patients per month
+        totalpatients = aggregated_data.copy().sum()
+
+        # Make ymonth and xmonth dataframes that correspond to the product of coordinates with the patients
+        xmonth = aggregated_data.copy()
+        ymonth = aggregated_data.copy()
+        xmonth.head()
+
+        # Merge the relevant coordinates for every dataframe
+        xmonth = xmonth.merge(coord, on='Municipality')
+        ymonth = ymonth.merge(coord, on='Municipality')
+
+        # Make ymonth and xmonth dataframes that correspond to the product of coordinates with the patients
+        xmonth = aggregated_data.copy()
+        ymonth = aggregated_data.copy()
+        xmonth.head()
+
+        # Merge the relevant coordinates for every dataframe
+        xmonth = xmonth.merge(coord, on='Municipality')
+        ymonth = ymonth.merge(coord, on='Municipality')
+
+        # Drop the irrelevant columns for every dataframe
+        xmonth = xmonth.drop(['Latitude'], axis=1)
+        ymonth = ymonth.drop(['Longitude'], axis=1)
+
+        # Find the time columns to calculate the center of mass
+        columns = [col for col in xmonth.columns.tolist() if col not in ['Municipality', 'Longitude', '2003-12']]
+
+        # Multiply the coordinates of each municipality with the number of patients
+        # and divide with the total number of patients of that month
+        for col in columns:
+            xmonth[col] = (xmonth[col]*xmonth['Longitude'])/totalpatients[col]
+            ymonth[col] = (ymonth[col]*ymonth['Latitude'])/totalpatients[col]
+
+        # Sum the product of the center of mass for each municipality
+        latitude = ymonth.sum()
+        longitude = xmonth.sum()
+
+        # Delete the reduntant first and last column
+        latitude = latitude.iloc[1:-1]
+        longitude = longitude.iloc[1:-1]
+
+        # Some monthns might have no incidences and no center of mass, thus we put it in the middle
+        latitude = latitude.fillna((coord['Latitude'].max() + coord['Latitude'].min())/2)
+        longitude = longitude.fillna((coord['Longitude'].max() + coord['Longitude'].min())/2)
+
+        return longitude, latitude
 
 
 def make_df_shapefile(df):
