@@ -24,3 +24,5 @@ Is the folder that has the code to develop the application that incorporates bot
 
 * [Images](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Images)
 This file just contains the logo of this project.
+
+* The [.gitignore](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/.gitignore) file is here to facilitate the git commits.

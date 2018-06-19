@@ -35,6 +35,8 @@ def bokeh_map():
     data = MonthlyTransform(ALL_df)
     data.find_mun()
     longi, lati = data.center_of_mass()
+    
+    # The find_mun method needs to be reused after the center_of_mass method
     data.find_mun()
     data = data.monthly_municipality()
     shp_data = make_df_shapefile(data)
