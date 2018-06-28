@@ -65,6 +65,10 @@ def bokeh_map():
                                              'transform': mapper},
                                  line_color='black', line_width=0.2, source=geo_source)
 
+    # This is to remove the axis of the figure to make it looke better.
+    p.xaxis.visible = False
+    p.yaxis.visible = False
+
     # This is to remove the grid lines of the map to make it look better.
     p.xgrid.visible = False
     p.ygrid.visible = False

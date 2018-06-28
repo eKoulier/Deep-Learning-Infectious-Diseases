@@ -439,7 +439,7 @@ class PrepareTimeDf(object):
 
         self.df = df
 
-    def create_lag(self, brabant=True, nlags=4):
+    def create_lag(self, brabant=True, nlags=3):
         """ Preprocesses the dataset in order to create time lags for 'HVB', 'WB', 'BZO' and 'Trends'.
         df: Pandas DataFrame
         brabat: Bool
@@ -465,6 +465,7 @@ class PrepareTimeDf(object):
         # We don't need Trends +1, no reason to forecast it. Remove also the last lag of trends
         del df['Trends+1']
         del df['Trends-'+str(nlags)]
+        del df['Trends-'+str(nlags-1)]
 
         # Due to the shift that creates nans, we delete the first nlags rows and the last row.
         df = df[nlags:].reset_index(drop=True)

@@ -35,7 +35,7 @@ def bokeh_map():
     data = MonthlyTransform(ALL_df)
     data.find_mun()
     longi, lati = data.center_of_mass()
-    
+
     # The find_mun method needs to be reused after the center_of_mass method
     data.find_mun()
     data = data.monthly_municipality()
@@ -70,6 +70,10 @@ def bokeh_map():
                                  line_color='black', line_width=0.2, source=geo_source)
 
     centerofmass = p.circle(x=longi[N], y=lati[N], color="#1a5921",)
+
+    # This is to remove the axis of the figure to make it looke better.
+    p.xaxis.visible = False
+    p.yaxis.visible = False
 
     # This is to remove the grid lines of the map to make it look better.
     p.xgrid.visible = False
