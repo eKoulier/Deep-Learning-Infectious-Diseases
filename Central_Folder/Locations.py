@@ -284,7 +284,6 @@ class MonthlyTransform(object):
         # Make ymonth and xmonth dataframes that correspond to the product of coordinates with the patients
         xmonth = aggregated_data.copy()
         ymonth = aggregated_data.copy()
-        xmonth.head()
 
         # Merge the relevant coordinates for every dataframe
         xmonth = xmonth.merge(coord, on='Municipality')
@@ -293,7 +292,6 @@ class MonthlyTransform(object):
         # Make ymonth and xmonth dataframes that correspond to the product of coordinates with the patients
         xmonth = aggregated_data.copy()
         ymonth = aggregated_data.copy()
-        xmonth.head()
 
         # Merge the relevant coordinates for every dataframe
         xmonth = xmonth.merge(coord, on='Municipality')
