@@ -1,9 +1,7 @@
 # Data files
 *.csv
 *.txt
-*.jpg
 *.json
-*.png
 
 # IDE specific folders and files
 .idea/
