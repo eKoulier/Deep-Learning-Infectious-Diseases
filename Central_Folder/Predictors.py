@@ -1,12 +1,24 @@
+import numpy as np
 import pandas as pd
 from sklearn.metrics import r2_score, mean_absolute_error
+
+# keras imports
+from keras import backend as K
 from keras.optimizers import Adam
 from keras.losses import mean_squared_error
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
 from keras import backend as K
-import numpy as np
 
+import shutil
+from abc import ABCMeta, abstract_attribute, abstractproperty
+
+class DataModel(metaclass=ABCMeta):
+    """ Each of the developed architectures should have a model property
+    """
+    @abstractproperty
+    def model(self):
+        pass
 
 class ModelUse(object):
     """ The class to be inherited by the models. It contains the train methods. This class is
@@ -57,8 +69,8 @@ class ModelUse(object):
             self.predBZO[time] = y_predict[:, 2]
 
 
-class DeepNN(object):
-    """ The main DeepNN used for our analysis."""
+class DeepNN_1(DataModel):
+    """ A DeepNN architecture used and tested for our analysis."""
     def __init__(self, numfeatures, numtargets):
         """Here we add the arcitecture of the model
         """
@@ -78,6 +90,28 @@ class DeepNN(object):
         model.add(Dense(numfeatures - 8))
         model.add(Activation('linear'))
         model.add(Dropout(0.12))
+
+        # Final layer
+        model.add(Dense(numtargets))
+
+        model.compile(loss=mean_squared_error,  optimizer='adam', metrics=['mse', 'accuracy'])
+
+        self.model = model
+
+class DeepNN_2(DataModel):
+    """ The main DeepNN used for our analysis."""
+    def __init__(self, numfeatures, numtargets):
+        """Here we add the arcitecture of the model """
+
+        model = Sequential()
+        # First layer
+        model.add(Dense(numfeatures - 6, input_dim=numfeatures))
+        model.add(Activation('linear'))
+        model.add(Dropout(0.15))
+
+        # Second layer
+        model.add(Dense(numfeatures - 6))
+        model.add(Activation('linear'))
 
         # Final layer
         model.add(Dense(numtargets))

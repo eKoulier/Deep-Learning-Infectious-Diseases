@@ -8,7 +8,7 @@ The architecture of this repository is simple to facilitate further extentions a
 There are mainly four different subdirectories for this project: 
 
 * [Central_Folder](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/tree/master/Central_Folder) 
-is the main file where the preprocessing of the data as well as the modeling part is automated. A tutorial on how to make an interactive choropleth map that has a time slider functionality 
+is the main file where the preprocessing of the data as well as the modeling part is automated. A tutorial on how to use the developed code to make an interactive choropleth map that has a time slider functionality 
 is provided in [MapSlider.py](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/blob/master/Central_Folder/MapSlider.py). The center of mass of the patients is visualized in the 
 [CenterOfMass](https://github.com/eKoulier/Deep-Learning-Infectious-Diseases/blob/master/Central_Folder/CenterOfMass.py). 
 

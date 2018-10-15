@@ -115,7 +115,6 @@ def bokeh_map():
     layout = column(p, slider)
     curdoc().add_root(layout)
 
-
 bokeh_map()
 
 # cd "Desktop\Deep-Learning-Infectious-Diseases\Central_Folder"
