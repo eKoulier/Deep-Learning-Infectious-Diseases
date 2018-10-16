@@ -14,8 +14,7 @@ An important element of this project was the development of insightful visualiza
 interactive map visualization that has a time slider functionality. The user is able to select the month that he is interested in having the map for and to hover over the map in order to explore the number of patients
 for every municipality. Other options such as using a logarithmic color scale, or using the ratio of affected people to the population of a municipality are also provided. 
 
-Two shnapshots of the interactive map are provided below. The left side map shows the number of patients per municipality and the right side one shows the ratio of patients per inhabitants. Notice the timeslides in the 
-bottom of both maps that allows the selection of the month. 
+Two snapshots of the interactive map are provided below. The left side map shows the number of patients per municipality and the right side one shows the ratio of patients per inhabitants. Notice the timeslider in the bottom of both maps that allows the selection of the month. 
 
 **Discaimer:** these snapsshots do not correspond to the actual data and they are here to just to provide a representation of how the interactive map looks like.
 
