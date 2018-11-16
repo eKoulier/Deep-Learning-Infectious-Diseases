@@ -18,7 +18,7 @@ Two snapshots of the interactive map are provided below. The left side map shows
 
 **Discaimer:** these snapsshots do not correspond to the actual data and they are here to just to provide a representation of how the interactive map looks like.
 
-<img src="../Images/map.JPG" width="800"/> 
+<img src="../Images/map.JPG" width="980"/> 
  
 ### Modeling the Disease
 
