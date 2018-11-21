@@ -8,7 +8,6 @@ from keras.optimizers import Adam
 from keras.losses import mean_squared_error
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
-from keras import backend as K
 
 import shutil
 from abc import ABCMeta, abstract_attribute, abstractproperty
