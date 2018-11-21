@@ -1,7 +1,6 @@
 # Bokeh imports
 from bokeh.io import curdoc
-from bokeh.models import GeoJSONDataSource, LinearColorMapper, HoverTool
-from bokeh.models import ColorBar
+from bokeh.models import GeoJSONDataSource, ColorBar, LinearColorMapper, HoverTool
 from bokeh.palettes import Magma256
 from bokeh.models.widgets import Slider
 from bokeh.layouts import layout, column
