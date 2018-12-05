@@ -16,7 +16,7 @@ for every municipality. Other options such as using a logarithmic color scale, o
 
 Two snapshots of the interactive map are provided below. The left side map shows the number of patients per municipality and the right side one shows the ratio of patients per inhabitants. Notice the timeslider in the bottom of both maps that allows the selection of the month. 
 
-**Discaimer:** these snapsshots do not correspond to the actual data and they are here to just to provide a representation of how the interactive map looks like.
+**Discaimer:** these snapshots do not correspond to the actual data and they are here to just to provide a representation of how the interactive map looks like.
 
 <img src="../Images/map.JPG" width="980"/> 
  
