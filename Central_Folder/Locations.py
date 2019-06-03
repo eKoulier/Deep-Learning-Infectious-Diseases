@@ -9,14 +9,14 @@ import sys
 sys.path.append("../Data/Map")
 
 # First we read the Files to be use
-cwd_L = os.getcwd()
+cwd = os.getcwd()
 os.chdir(r'../Data/Map')
 post_to_mun = pd.read_csv('Post_to_Mun.txt', sep=';')
 mun_to_GGD = pd.read_csv('Mun_to_GGD.csv', sep=';')
 mun_to_GGD['Municipality'] = mun_to_GGD['Municipality'].replace('Nuenen',
                                                                 'Nuenen, Gerwen en Nederwetten')
-shp_Nether = gpd.read_file('GEO.Gemeente_2015.shp')
-os.chdir(cwd_L)
+shp_netherlands = gpd.read_file('GEO.Gemeente_2015.shp')
+os.chdir(cwd)
 
 
 class MonthlyTransform(object):
@@ -64,7 +64,7 @@ class MonthlyTransform(object):
         self.df = df_time_extended
 
     def find_mun(self):
-        """ Creates the Municipality column to the DataFrame. The Dataframe
+        """ Creates the Municipality column to the DataFrame. The Data frame
         should have a column named PostCode.
         """
 
@@ -79,8 +79,7 @@ class MonthlyTransform(object):
                                                                       'Nuenen, Gerwen en Nederwetten')
 
         except AssertionError:
-            print('LEFTERIS\'S MESSEGE!: ' +
-                  + 'There in no column named PostCode')
+            print('There is no column named PostCode.')
 
     def find_GGD(self):
         """ Given the fact that there is a Municipality column, this method
@@ -96,8 +95,7 @@ class MonthlyTransform(object):
             self.df = pd.merge(self.df, mun_to_GGD, on='Municipality')
 
         except AssertionError:
-            print('LEFTERIS\'S MESSEGE!: ' +
-                  + 'There in no column named PostCode')
+            print('There in no column named PostCode.')
 
     def monthly_municipality(self, mun_index=True, Brabant=True):
         """
@@ -122,11 +120,11 @@ class MonthlyTransform(object):
             If True, we limit ourselves to the Noord-Brabant Municipalities.
             Good to have it to build the interactive map.
         """
-        # msg = 'LEFTERIS\'S MESSEGE!: There sould be a Date and a Municipality column'
+
         assert 'Municipality' in self.df.columns,\
-               'LEFTERIS\'S MESSEGE!: There sould be a Municipality column'
+               'There sould be a Municipality column'
         assert 'Date' in self.df.columns,\
-               'LEFTERIS\'S MESSEGE!: There sould be a Date column'
+               'There should be a Date column'
 
         data = self.df.copy()
 
@@ -135,45 +133,45 @@ class MonthlyTransform(object):
 
         # Create the pivot table
 
-        Mun_df = data.pivot_table(index='Municipality',
+        mun_df = data.pivot_table(index='Municipality',
                                   columns='Date', values='Count',
                                   aggfunc=np.sum, fill_value=0)
 
         # Delete the extra heading of the pivot table
-        Mun_df = pd.DataFrame(Mun_df.to_records())
+        mun_df = pd.DataFrame(mun_df.to_records())
 
 
         if Brabant:
             br_mun_list = mun_to_GGD['Municipality'][mun_to_GGD['GGD'].isin(['BZO', 'HVB', 'WB'])]
             br_mun_list = br_mun_list.tolist()
-            Mun_df = Mun_df[Mun_df['Municipality'].isin(br_mun_list)]
-            data_cols = Mun_df.columns.tolist()
+            mun_df = mun_df[mun_df['Municipality'].isin(br_mun_list)]
+            data_cols = mun_df.columns.tolist()
             data_cols.remove('Municipality')
 
             for mun in br_mun_list:
-                if str(mun) not in Mun_df['Municipality'].unique().tolist():
+                if str(mun) not in mun_df['Municipality'].unique().tolist():
                     temp_dict = {'Municipality': mun}
                     for col in data_cols:
                         temp_dict[col] = 0
                     temp_series = pd.Series(temp_dict)
 
-                    Mun_df = Mun_df.append(temp_series, ignore_index=True)
+                    mun_df = mun_df.append(temp_series, ignore_index=True)
 
         if not mun_index:
-            Mun_df = Mun_df.transpose()
-            Mun_df.columns = Mun_df.iloc[0, :].tolist()
-            Mun_df = Mun_df.iloc[2:, :]
-            Mun_df['Date'] = Mun_df.index
+            mun_df = mun_df.transpose()
+            mun_df.columns = mun_df.iloc[0, :].tolist()
+            mun_df = mun_df.iloc[2:, :]
+            mun_df['Date'] = mun_df.index
 
             # Need to modify the date to plot the municipal time series
-            Mun_df['Date'] = Mun_df['Date'].astype(str)
-            Mun_df['Date'] = pd.to_datetime(Mun_df['Date'], format='%Y-%m')
+            mun_df['Date'] = mun_df['Date'].astype(str)
+            mun_df['Date'] = pd.to_datetime(mun_df['Date'], format='%Y-%m')
 
-            Mun_df = Mun_df.reset_index(drop=True)
+            mun_df = mun_df.reset_index(drop=True)
 
-        return Mun_df
+        return mun_df
 
-    def monthly_GGD(self, GGD_index=True, gTrends=True, Brabant=True):
+    def monthly_GGD(self, GGD_index=True, gtrends=True, Brabant=True):
         """
         A function that creates the pivot pd.DataFrame:
         Month    HVB  WB  BZO  Trends
@@ -192,7 +190,7 @@ class MonthlyTransform(object):
             index Date     HVB  BZO  WB
             0     2008-04   1    2    1
             1     2008-05   0    5    6
-        gTrends: Bool
+        gtrends: Bool
             If True the user is asked to provide a the directory of the csv file that
             has the goole trends data. Then the returned DataFrame is looks like:
             Month    HVB  WB  BZO  Trends
@@ -210,36 +208,36 @@ class MonthlyTransform(object):
                 data = data[data['GGD'].isin(['BZO', 'HVB', 'WB'])].reset_index(drop=True)
 
             if GGD_index:
-                GGD_df = data.pivot_table(index='Date', columns='GGD',
+                ggd_df = data.pivot_table(index='Date', columns='GGD',
                                           values='Count', aggfunc=np.sum,
                                           fill_value=0)
 
             else:
-                GGD_df = data.pivot_table(index='GGD', columns='Date',
+                ggd_df = data.pivot_table(index='GGD', columns='Date',
                                           values='Count', aggfunc=np.sum,
                                           fill_value=0)
 
-            GGD_df = pd.DataFrame(GGD_df.to_records())
+            ggd_df = pd.DataFrame(ggd_df.to_records())
 
-            if gTrends:
-                gTrendsDir = str(input('Please Give me the Directry of the Google Trends data: '))
-                os.chdir(gTrendsDir)
-                gTrendsData = pd.read_csv('trends.csv')
+            if gtrends:
+                gtrends_dir = str(input('Please Give me the Directory of the Google Trends data: '))
+                os.chdir(gtrends_dir)
+                gtrends_data = pd.read_csv('trends.csv')
 
-                # In case the user did not delete the empty gTrends rows.
-                if len(gTrendsData.columns) == 1:
-                    gTrendsData = pd.read_csv('trends.csv', skiprows=[0, 1])
+                # In case the user did not delete the empty gtrends rows.
+                if len(gtrends_data.columns) == 1:
+                    gtrends_data = pd.read_csv('trends.csv', skiprows=[0, 1])
 
-                gTrendsData.columns = ['Date', 'Trends']
-                gTrendsData['Date'] = pd.to_datetime(gTrendsData['Date'], format='%Y-%m').dt.to_period('M')
+                gtrends_data.columns = ['Date', 'Trends']
+                gtrends_data['Date'] = pd.to_datetime(gtrends_data['Date'], format='%Y-%m').dt.to_period('M')
 
-                GGD_df = pd.merge(GGD_df, gTrendsData, on='Date')
+                ggd_df = pd.merge(ggd_df, gtrends_data, on='Date')
 
                 # We convert the Date column to pandas periods so that we can plot the number of incidences
-                GGD_df['Date'] = GGD_df['Date'].astype(str)
-                GGD_df['Date'] = pd.to_datetime(GGD_df['Date'], format='%Y-%m')
+                ggd_df['Date'] = ggd_df['Date'].astype(str)
+                ggd_df['Date'] = pd.to_datetime(ggd_df['Date'], format='%Y-%m')
 
-            return GGD_df
+            return ggd_df
 
         except AssertionError:
             print('There sould be a Date and a GGD column')
@@ -261,16 +259,17 @@ class MonthlyTransform(object):
         coord = coord[['County', 'Latitude', 'Longitude']]
         coord.columns = ['Municipality', 'Latitude', 'Longitude']
 
-        # erase gemeente word in front of every municipality
+        # erase municipality word in front of every municipality
         coord['Municipality'] = coord['Municipality'].str[9:]
-        coord['Municipality'] = coord['Municipality'].replace('Nuenen', 'Nuenen, Gerwen en Nederwetten')
+        coord['Municipality'] = coord['Municipality']\
+            .replace('Nuenen', 'Nuenen, Gerwen en Nederwetten')
 
         municipalities = mun_to_GGD['Municipality'][mun_to_GGD['GGD'].isin(['BZO', 'HVB', 'WB'])]
         municipalities = municipalities.tolist()
 
         coord = coord[coord['Municipality'].isin(municipalities)].reset_index(drop=True)
 
-        # Avoid coordinate reduntancy
+        # Avoid coordinate redundancy
         coord = coord.groupby('Municipality').head(1).reset_index(drop=True)
 
         # import the data
@@ -281,7 +280,8 @@ class MonthlyTransform(object):
         # find the number of patients per month
         totalpatients = aggregated_data.copy().sum()
 
-        # Make ymonth and xmonth dataframes that correspond to the product of coordinates with the patients
+        # Make ymonth and xmonth data frames that correspond to the
+        # product of coordinates with the patients
         xmonth = aggregated_data.copy()
         ymonth = aggregated_data.copy()
 
@@ -289,7 +289,8 @@ class MonthlyTransform(object):
         xmonth = xmonth.merge(coord, on='Municipality')
         ymonth = ymonth.merge(coord, on='Municipality')
 
-        # Make ymonth and xmonth dataframes that correspond to the product of coordinates with the patients
+        # Make ymonth and xmonth dataframes that correspond to the
+        # product of coordinates with the patients
         xmonth = aggregated_data.copy()
         ymonth = aggregated_data.copy()
 
@@ -302,7 +303,8 @@ class MonthlyTransform(object):
         ymonth = ymonth.drop(['Longitude'], axis=1)
 
         # Find the time columns to calculate the center of mass
-        columns = [col for col in xmonth.columns.tolist() if col not in ['Municipality', 'Longitude', '2003-12']]
+        columns = [col for col in xmonth.columns.tolist() if col not in
+                   ['Municipality', 'Longitude', '2003-12']]
 
         # Multiply the coordinates of each municipality with the number of patients
         # and divide with the total number of patients of that month
@@ -343,26 +345,24 @@ def make_df_shapefile(df):
         try:
             assert 'Municipality' in df.columns
 
-            # Preprocessing the shapefile to be used
-            columns = shp_Nether.columns
+            # Preprocess the shapefile to be used
+            columns = shp_netherlands.columns
             columns = [x for x in columns if x not in ['GMNAAM', 'geometry']]
 
             for column in columns:
-                del shp_Nether[column]
+                del shp_netherlands[column]
 
-            shp_Nether.columns = ['Municipality', 'geometry']
+            shp_netherlands.columns = ['Municipality', 'geometry']
 
             # This Municipality does not exist anymore
             if 'Maasdonk' in df['Municipality']:
-                df['Municipality'] = df['Municipality'].replace('Maasdonk',
-                                                                'Oss')
+                df['Municipality'] = df['Municipality'].replace('Maasdonk', 'Oss')
             if 'Nuenen' in df['Municipality']:
-                df['Municipality'] = df['Municipality'].replace('Nuenen', 'Nuenen, Gerwen en ' +
-                                                                + 'Nederwetten')
+                df['Municipality'] = df['Municipality'].replace('Nuenen', 'Nuenen, Gerwen en Nederwetten')
 
             # Now we limit muns to the municipalitites that only exist in df
             exist_Mun = df['Municipality'].unique().tolist()
-            shp_Mun = shp_Nether[shp_Nether['Municipality'].isin(exist_Mun)]
+            shp_Mun = shp_netherlands[shp_netherlands['Municipality'].isin(exist_Mun)]
 
             # We reset the index because of deleted rows
             shp_Mun = shp_Mun.reset_index(drop=True)
@@ -370,13 +370,13 @@ def make_df_shapefile(df):
             # We make the coordinates according to the International system
             shp_Mun = shp_Mun.to_crs({'init': 'epsg:4326'})
 
-            # Merge the shp_Nether with the Mun_df
-            Mun_df = pd.merge(df, shp_Mun, on='Municipality')
+            # Merge the shp_netherlands with the mun_df
+            mun_df = pd.merge(df, shp_Mun, on='Municipality')
 
-            # The Pandas dataframe should be converted to geopandas Dataframe
-            Mun_df = gpd.GeoDataFrame(Mun_df)
+            # The Pandas data frame should be converted to geo pandas Data frame
+            mun_df = gpd.GeoDataFrame(mun_df)
 
-            return Mun_df
+            return mun_df
 
         except AssertionError:
             print('There is no Column Named Municipality')
@@ -384,7 +384,7 @@ def make_df_shapefile(df):
 
 def disease_studied(keep=False):
     """ Directs to the relevant data directory of the disease. It then concatenates
-    all the dataframes of that disease.
+    all the data frames of that disease.
     keep: Bool
         If True we keep all the columns of the dataframe to be returned.
     """
@@ -411,7 +411,7 @@ def disease_studied(keep=False):
                 df = pd.read_csv(csv, sep=';')
                 for column in ['PostCode', 'Date']:
                     if column not in df.columns.tolist():
-                        print('LEFTERIS: CAREFUL! there is no column named ' + column + 'in ' + csv)
+                        print('There is no column named ' + column + 'in ' + csv)
 
         all_df = all_df.append(df).reset_index(drop=True)
 

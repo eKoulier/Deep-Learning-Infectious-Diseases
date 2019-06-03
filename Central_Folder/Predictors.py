@@ -34,7 +34,7 @@ class ModelUse(object):
         self.predWB = pd.DataFrame()
         self.predBZO = pd.DataFrame()
 
-    def train_model(self, epochs, times, nbest, Perf):
+    def train_model(self, epochs, times, nbest, perf):
         ''' The train method.
         times: int
             Number of times to train and test the model
@@ -70,28 +70,28 @@ class ModelUse(object):
 
 class DeepNN_1(DataModel):
     """ A DeepNN architecture used and tested for our analysis."""
-    def __init__(self, numfeatures, numtargets):
+    def __init__(self, num_features, num_targets):
         """Here we add the arcitecture of the model
         """
 
         model = Sequential()
         # First layer
-        model.add(Dense(numfeatures - 6, input_dim=numfeatures))
+        model.add(Dense(num_features + 2, input_dim=num_features))
         model.add(Activation('linear'))
         model.add(Dropout(0.1))
 
         # Second layer
-        model.add(Dense(numfeatures - 6))
+        model.add(Dense(num_features - 6))
         model.add(Activation('linear'))
         model.add(Dropout(0.2))
 
         # Third layer
-        model.add(Dense(numfeatures - 8))
+        model.add(Dense(num_features - 8))
         model.add(Activation('linear'))
         model.add(Dropout(0.12))
 
         # Final layer
-        model.add(Dense(numtargets))
+        model.add(Dense(num_targets))
 
         model.compile(loss=mean_squared_error,  optimizer='adam', metrics=['mse', 'accuracy'])
 
@@ -99,21 +99,21 @@ class DeepNN_1(DataModel):
 
 class DeepNN_2(DataModel):
     """ The main DeepNN used for our analysis."""
-    def __init__(self, numfeatures, numtargets):
+    def __init__(self, num_features, num_targets):
         """Here we add the arcitecture of the model """
 
         model = Sequential()
         # First layer
-        model.add(Dense(numfeatures - 6, input_dim=numfeatures))
+        model.add(Dense(num_features + 2, input_dim=num_features))
         model.add(Activation('linear'))
         model.add(Dropout(0.15))
 
         # Second layer
-        model.add(Dense(numfeatures - 6))
+        model.add(Dense(num_features - 6))
         model.add(Activation('linear'))
 
         # Final layer
-        model.add(Dense(numtargets))
+        model.add(Dense(num_targets))
 
         model.compile(loss=mean_squared_error,  optimizer='adam', metrics=['mse', 'accuracy'])
 

@@ -1,6 +1,7 @@
 # Bokeh imports
 from bokeh.io import curdoc
-from bokeh.models import GeoJSONDataSource, ColorBar, LinearColorMapper, HoverTool
+from bokeh.models import GeoJSONDataSource, LinearColorMapper, HoverTool
+from bokeh.models import ColorBar
 from bokeh.palettes import Magma256
 from bokeh.models.widgets import Slider
 from bokeh.layouts import layout, column
@@ -12,16 +13,18 @@ from Locations import MonthlyTransform, make_df_shapefile, disease_studied
 
 # Here Starts the Bokeh App
 def bokeh_map():
-    """This function creates the choropleth map with the time slider using Bokeh library.
-    The input to the main body of this function before, is the geopandas DataFrame that has the
-    'Geometry column' (see below). This map is made especially for disease incidence visualizations
-    and for other visualization purposes (electios, sell-buy, etc), the user should change the high
-    parameter and to make the shp_data variable similar to the following:
+    """This function creates the choropleth map with the time slider
+    using Bokeh library. The input to the main body of this function
+    before, is the geopandas DataFrame that has the'Geometry column'
+    (see below). This map is made especially for disease incidence
+    visualizations and for other visualization purposes (elections,
+    sell-buy, etc), the user should change the high parameter and to
+    make the shp_data variable similar to the following:
     index   Municipality  2004-01   2004-02   2004-3  ...  Geometry
       0      Eindhoven       2         5        12         POLYGON()
       1        Breda         8        14         9         POLYGON()
       2 's Hertogenbosch     0         0        19         POLYGON()
-    Obviously, the time slider will read from the columns 2004-01, 2004-02, etc.
+    The time slider will read from the columns 2004-01, 2004-02, etc.
     """
 
     disease = str(input('What disease would you like to Visualize? '))
@@ -30,13 +33,18 @@ def bokeh_map():
     # only correspond to just a few municipalities.
 
     # Data Preprocessing
-    ALL_df = disease_studied()
-    data = MonthlyTransform(ALL_df)
+    all_df = disease_studied()
+    data = MonthlyTransform(all_df)
+    data.find_mun()
+    longi, lati = data.center_of_mass()
+
+    # The find_mun method needs to be reused after the center_of_mass method
     data.find_mun()
     data = data.monthly_municipality()
     shp_data = make_df_shapefile(data)
     column_list = shp_data.columns.tolist()
-    column_list = [e for e in column_list if e not in ('Municipality', 'geometry')]
+    column_list = [col for col in column_list if col not in
+                   ('Municipality', 'geometry')]
 
     # Main Body
     if disease == 'Kinkhoest':
@@ -45,6 +53,8 @@ def bokeh_map():
         high = shp_data[column_list].max().max() - 3
 
     TOOLS = "pan,wheel_zoom,reset,hover,save"
+
+    # This will be the default column to start the visualization
     color_column = '2010-01'
 
     geojson = shp_data.to_json()
@@ -64,11 +74,13 @@ def bokeh_map():
                                              'transform': mapper},
                                  line_color='black', line_width=0.2, source=geo_source)
 
-    # This is to remove the axis of the figure to make it looke better.
+    center_of_mass = p.circle(x=longi[N], y=lati[N], color="#1a5921",)
+
+    # This is to remove the axis of the figure to improve its appearance.
     p.xaxis.visible = False
     p.yaxis.visible = False
 
-    # This is to remove the grid lines of the map to make it look better.
+    # This is to remove the grid lines of the map to improve its appearance.
     p.xgrid.visible = False
     p.ygrid.visible = False
 
@@ -93,6 +105,9 @@ def bokeh_map():
         slider.title = slider_title(new)
         g = patches_renderer.glyph
         g.fill_color = {**g.fill_color, 'field': color_column}
+        k = center_of_mass.glyph
+        k.x = longi[new]
+        k.y = lati[new]
         hover = p.select_one(HoverTool)
         hover.point_policy = "follow_mouse"
         hover.tooltips = [
@@ -105,8 +120,7 @@ def bokeh_map():
     layout = column(p, slider)
     curdoc().add_root(layout)
 
-
 bokeh_map()
 
-# cd "Desktop\Deep-Learning-Infectious-Diseases\Central_Folder"
-# bokeh serve --show MapSlider.py
+# cd "path_to_file\Deep-Learning-Infectious-Diseases\Central_Folder"
+# bokeh serve --show CenterOfMass.py
