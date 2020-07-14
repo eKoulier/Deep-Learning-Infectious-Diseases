@@ -1,4 +1,4 @@
-<img src="Images/project_logo.png" width="800"/> 
+![Optional Text](Images/project_logo.png)
 
 # Deep-Learning-Infectious-Diseases
 Wellcome to the repository of the Infectious Disease Project sponsored by [GGD Netherlands](https://nl.wikipedia.org/wiki/Gemeentelijke_gezondheidsdienst). 
